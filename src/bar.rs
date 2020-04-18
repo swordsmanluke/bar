@@ -34,7 +34,7 @@ pub fn vertical_bar(title: Option<&String>, pct: i32, size: i32) -> String {
     for _ in 0..remaining_cells { blocks.push(center(V_EMPTY, offset)) }
 
     match title {
-        Some(t) => blocks.push(format!("{}\n", t.clone())),
+        Some(t) => blocks.push(format!("{}", t.clone())),
         None => {()}
     }
 
@@ -54,6 +54,8 @@ pub fn horizontal_bar(title: Option<&String>, pct: i32, size: i32) -> String {
         None => {()}
     }
 
+    out += format!(" %{:02} ", pct).as_str();
+
     for _ in 0..full_cells { out += BLOCK; }
 
     match last_cell_fullness {
@@ -64,8 +66,6 @@ pub fn horizontal_bar(title: Option<&String>, pct: i32, size: i32) -> String {
     };
 
     for _ in 0..remaining_cells { out += H_EMPTY }
-
-    out += format!(" %{:02}", pct).as_str();
 
     out
 }
