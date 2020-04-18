@@ -1,0 +1,5 @@
+#!/bin/bash
+
+used=$(free -m | grep Mem | awk {'print int($7/$2*100)'})
+
+./target/debug/bar -v -t "MEM" -s 5 $used 

@@ -20,6 +20,8 @@ pub fn vertical_bar(title: Option<&String>, pct: i32, size: i32) -> String {
         None => 0
     };
 
+    blocks.push( format!("%{:02}", pct));
+
     for _ in 0..full_cells { blocks.push(center(BLOCK, offset)); }
 
     match last_cell_fullness {
@@ -62,6 +64,8 @@ pub fn horizontal_bar(title: Option<&String>, pct: i32, size: i32) -> String {
     };
 
     for _ in 0..remaining_cells { out += H_EMPTY }
+
+    out += format!(" %{:02}", pct).as_str();
 
     out
 }
