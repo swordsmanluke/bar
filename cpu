@@ -1,6 +1,6 @@
 #!/bin/bash
 
-idle=$(iostat -c | awk 'NF' | tail -n1 | awk {'print int($6)'})
-used=$(( 100 - idle ))
+#idle=$(iostat -c | awk 'NF' | tail -n1 | awk {'print int($6)'})
+used=$(vmstat 1 2 | tail -n1 | awk {'print 100 - $15'})
 
 ./target/debug/bar -v -t "CPU" -s 5 $used 
