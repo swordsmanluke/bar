@@ -3,4 +3,4 @@
 #idle=$(iostat -c | awk 'NF' | tail -n1 | awk {'print int($6)'})
 used=$(vmstat 1 2 | tail -n1 | awk {'print 100 - $15'})
 
-./target/debug/bar -v -t "CPU" -s 5 $used 
+./target/debug/bar -vp -t "CPU" -s 5 $used 

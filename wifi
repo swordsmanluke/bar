@@ -1,0 +1,5 @@
+#/bin/bash
+
+sig_str=$(/sbin/iw wlan0 info | grep txpower | awk '{ print int(100 * ((60 - (int($2) - 30))/60)) }')
+
+./target/debug/bar -vc -s 1 $sig_str
