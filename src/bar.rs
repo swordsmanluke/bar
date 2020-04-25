@@ -1,4 +1,5 @@
 use std::ops::Add;
+use colored::*;
 
 const BLOCK: &str = "█";
 const V_HALF: &str =  "▄";
@@ -9,7 +10,14 @@ const H_HALF: &str =  "▌";
 const H_QUARTER: &str =  "▎";
 const H_EMPTY: &str = "|";
 
-pub fn vertical_bar(title: Option<&String>, pct: i32, size: i32) -> String {
+#[derive(Clone, Copy)]
+pub enum BarColor {
+    None,
+    Ascending,
+    Descending
+}
+
+pub fn vertical_bar(title: Option<&String>, pct: i32, size: i32, percentage: bool, bar_color: BarColor) -> String {
     let mut blocks: Vec<String> = Vec::new();
 
     let full_cells = full_cells(pct, size);
@@ -20,14 +28,14 @@ pub fn vertical_bar(title: Option<&String>, pct: i32, size: i32) -> String {
         None => 0
     };
 
-    blocks.push( format!("%{:02}", pct));
+    if percentage { blocks.push( format!("%{:02}", pct)); }
 
-    for _ in 0..full_cells { blocks.push(center(BLOCK, offset)); }
+    for _ in 0..full_cells { blocks.push(color(center(BLOCK, offset), pct, bar_color)); }
 
     match last_cell_fullness {
-        1..=25   => blocks.push(center(V_BOTTOM, offset)),
-        26..=75  => blocks.push(center(V_HALF, offset)),
-        76..=100 => blocks.push(center(BLOCK, offset)),
+        1..=25   => blocks.push(color(center(V_BOTTOM, offset), pct,bar_color)),
+        26..=75  => blocks.push(color(center(V_HALF, offset), pct,bar_color)),
+        76..=100 => blocks.push(color(center(BLOCK, offset), pct,bar_color)),
         _ => {}
     };
 
@@ -42,7 +50,7 @@ pub fn vertical_bar(title: Option<&String>, pct: i32, size: i32) -> String {
     blocks.join("\n").to_string()
 }
 
-pub fn horizontal_bar(title: Option<&String>, pct: i32, size: i32) -> String {
+pub fn horizontal_bar(title: Option<&String>, pct: i32, size: i32, percentage: bool, bar_color: BarColor) -> String {
     let mut out: String = String::new();
 
     let full_cells = full_cells(pct, size);
@@ -54,20 +62,46 @@ pub fn horizontal_bar(title: Option<&String>, pct: i32, size: i32) -> String {
         None => {()}
     }
 
-    out += format!(" %{:02} ", pct).as_str();
+    if percentage { out += format!(" %{:02} ", pct).as_str(); }
 
-    for _ in 0..full_cells { out += BLOCK; }
+    for _ in 0..full_cells { out += color(BLOCK.to_string(), pct, bar_color).as_str(); }
 
     match last_cell_fullness {
-        1..=25   => out += H_QUARTER,
-        26..=75  => out += H_HALF,
-        76..=100 => out += BLOCK,
+        1..=25   => out += color(H_QUARTER.to_string(), pct, bar_color).as_str(),
+        26..=75  => out += color(H_HALF.to_string(), pct, bar_color).as_str(),
+        76..=100 => out += color(BLOCK.to_string(), pct, bar_color).as_str(),
         _ => {}
     };
 
     for _ in 0..remaining_cells { out += H_EMPTY }
 
     out
+}
+
+fn color(s: String, pct: i32, bc: BarColor) -> String {
+    match bc {
+        BarColor::Ascending => asc_color(s, pct),
+        BarColor::Descending => desc_color(s, pct),
+        BarColor::None => s
+    }
+}
+
+fn asc_color(s: String, pct: i32) -> String {
+    match pct {
+        0..=49 => s.bright_red().to_string(),
+        50..=74 => s.bright_yellow().to_string(),
+        75..=100 => s.green().to_string(),
+        _ => s
+    }.to_string()
+}
+
+fn desc_color(s: String, pct: i32) -> String {
+    match pct {
+        0..=49 => s.green().to_string(),
+        50..=74 => s.bright_yellow().to_string(),
+        75..=100 => s.bright_red().to_string(),
+        _ => s
+    }
 }
 
 fn center(s: &str, offset: usize) -> String {
