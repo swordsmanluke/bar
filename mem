@@ -2,4 +2,4 @@
 
 used=$(free -m | grep Mem | awk {'print int($7/$2*100)'})
 
-./target/debug/bar -v -t "MEM" -s 5 $used 
+./target/debug/bar -vp -t "MEM" -s 5 $used 
